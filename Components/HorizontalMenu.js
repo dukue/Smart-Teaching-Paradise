@@ -12,7 +12,6 @@ export default function Widget() {
                 {Hmenu.map((item,index)=>(
                   <Text onPress={()=>{
                     setActiveTab(item)
-                    console.log(activeTab)
                   }} key={index} style={activeTab===item?styles.menuItemActive:styles.item}>{item}</Text>
                 ))}
               </View>

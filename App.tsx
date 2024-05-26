@@ -1,8 +1,15 @@
 import React from 'react';
 import { StyleSheet,SafeAreaView } from 'react-native';
-import { GluestackUIProvider,StatusBar,View} from '@gluestack-ui/themed';
+import { GluestackUIProvider,View} from '@gluestack-ui/themed';
 import { config } from '@gluestack-ui/config'; // Optional if you want to use default theme
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+
+import Header from "./Components/Header";
 import  MainPage  from './Views/MainPage';
+import ChatScreen from './Views/ChatAi';
+
+const Stack = createNativeStackNavigator()
 
 type ThemeContextType = {
   colorMode?: "dark" | "light";
@@ -20,9 +27,9 @@ export default function App() {
   const toggleColorMode = async () => {
     setColorMode((prev) => (prev === "light" ? "dark" : "light"));
   };
-
   return (
     <>
+    <NavigationContainer>
     <SafeAreaView
         style={{
           backgroundColor: colorMode === "light" ? "#E5E5E5" : "#262626",
@@ -36,11 +43,14 @@ export default function App() {
       >
     <GluestackUIProvider config={config} colorMode={colorMode}>
     <ThemeContext.Provider value={{ colorMode, toggleColorMode }}>
-      <StatusBar backgroundColor={colorMode === "light" ? "white" : "#171717"} barStyle={colorMode === "light"?"dark-content":"light-content"}/>
-      <MainPage/>
+    <Stack.Navigator initialRouteName='Home'>
+      <Stack.Screen name='Home' component={MainPage} options={{ headerShown: false }}/>
+      <Stack.Screen name='ChatScreen' component={ChatScreen} />
+    </Stack.Navigator>
    </ThemeContext.Provider>
     </GluestackUIProvider>
     </SafeAreaView>
+    </NavigationContainer>
     </>
   );
 }

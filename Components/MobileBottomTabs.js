@@ -1,9 +1,9 @@
 import React from "react";
 import { HStack, Icon, Pressable, Text, VStack } from "@gluestack-ui/themed";
+import PlaceModal from "../Views/PlaceModal";
 
 export const MobileBottomTabs = ({ bottomTabs, activeTab, setActiveTab }) => {
   const [modalVisible, setModalVisible] = React.useState(false);
-  const [actionsheetVisible, setActionsheetVisible] = React.useState(false);
 
   return (
     <>
@@ -24,14 +24,10 @@ export const MobileBottomTabs = ({ bottomTabs, activeTab, setActiveTab }) => {
             <Pressable
               key={tab.label}
               onPress={() => {
-                if (tab.label !== "Listing" && tab.label !== "Filter") {
+                if (tab.label !== "添加计划") {
                   setActiveTab(tab.label);
-                }
-                if (tab.label === "Listing") {
+                }else{
                   setModalVisible(true);
-                }
-                if (tab.label === "Filter") {
-                  setActionsheetVisible(true);
                 }
               }}
               disabled={tab.disabled}
@@ -65,7 +61,7 @@ export const MobileBottomTabs = ({ bottomTabs, activeTab, setActiveTab }) => {
         })}
       </HStack>
       {modalVisible && (
-        <ListYourPlaceModal
+        <PlaceModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
         />

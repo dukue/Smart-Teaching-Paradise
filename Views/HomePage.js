@@ -5,7 +5,6 @@ import {
   VStack,
 } from "@gluestack-ui/themed";
 import { ScrollView } from "react-native";
-
 /**
  * 主页
  */
@@ -19,5 +18,4 @@ const HomePage = ({ isActive }) => {
     </ScrollView>
   );
 };
-
 export default HomePage;
