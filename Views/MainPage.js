@@ -32,7 +32,7 @@ const bottomTabs = [
       label: "我的",
     },
   ];
-const MainPage = () => {
+const MainPage = ({navigation}) => {
     const [activeTab, setActiveTab] = React.useState("主页");
     const { colorMode, toggleColorMode } = useContext(ThemeContext);
 
@@ -49,7 +49,7 @@ const MainPage = () => {
   
           <Box flex={1}>
             <ProfilePage isActive={activeTab === "我的"} />
-            <HomePage isActive={activeTab === "主页"}/>
+            <HomePage navigation={navigation} isActive={activeTab === "主页"}/>
             <DataAnalysisPage isActive={activeTab === "统计"}/>
   
             <ModeChangeButton />

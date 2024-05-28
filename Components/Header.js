@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet,TouchableNativeFeedback } from 'react-native';
 import { View,Divider,Text,Avatar,Icon,Input,InputSlot,InputIcon,InputField,Card,Heading,AvatarFallbackText,AvatarImage } from '@gluestack-ui/themed';
 import { Search,Camera,MessageCircleQuestion,Clock } from 'lucide-react-native';
 
@@ -7,7 +7,7 @@ import { Search,Camera,MessageCircleQuestion,Clock } from 'lucide-react-native';
 /**
  * 主页头部布局（header+banner）
  * */
-const HeaderLayout = () => {
+const HeaderLayout = ({navigation}) => {
         return (
         <View p="$2">
             <View style={styles.header}>
@@ -41,6 +41,7 @@ const HeaderLayout = () => {
                 </Card>
                 </View>         
                 <View style={styles.cardsRight}>
+                <TouchableNativeFeedback onPress={()=>{navigation.navigate('ChatScreen')}}>
                 <Card size="md" style={styles.card} variant="elevated"  m="$2">
                 <Heading mb="$1" size="sm">
                     AI 问答
@@ -48,6 +49,7 @@ const HeaderLayout = () => {
                 </Heading>
                 <Text size="sm">AI Q&A</Text>
                 </Card>
+                </TouchableNativeFeedback>
                 <Card size="md" style={styles.card} variant="elevated"  m="$2">
                 <Heading size="sm">
                     番茄时钟

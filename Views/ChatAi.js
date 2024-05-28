@@ -1,67 +1,108 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import React,{ useEffect } from 'react';
+import { TouchableOpacity,StyleSheet } from 'react-native';
+import { View , Text, Input, InputField, ScrollView,Button,ButtonIcon,HStack  } from '@gluestack-ui/themed';
+import { SendIcon } from 'lucide-react-native';
+import ws from '../utils/socket'
+import {APPID} from '../utils/aiPath'
 
-export default function ChatScreen() {
+export default function ChatScreen(){
+  useEffect(() => {
+    // connectWebSocket()
+  }, []);
+    const [message, setMessage] = React.useState('');
+    const [messageList, setMessageList] = React.useState([{
+      role: "user",
+      content: "你好"
+    }])
+
+    // websocket发送数据
+async function SendMessage(ws,messages,setMessageList) {
+  let system=""
+
+  var params = {
+      header: {
+          app_id: APPID, "uid": "fd3f47e3-d"
+      }, parameter: {
+          chat: {
+              "domain": "generalv3.5", "temperature": 0.5, "max_tokens": 1024
+          }
+      }, payload: {
+          message: {
+            text: [
+                {"role": "user", "content":messages}
+            ]
+          }
+      }
+  }
+  let newUserMessage = {
+    role: "user",
+    content: messages
+  }
+  setMessageList(prevMessages => [...prevMessages, newUserMessage]);
+  ws.onopen = e => {
+    console.log("websocket连接成功")
+  };
+  ws.send(JSON.stringify(params))
+  setMessage("")
+  ws.onmessage = e => {
+    var data = JSON.parse(e.data)
+    var aiMessage = data.payload.choices.text[0].content
+    system += aiMessage
+  }
+
+  ws.onclose = e => {
+    let newSystemMessage = {
+      role: "ai",
+      content: system
+    }
+    console.log(system)
+    setMessageList(prevMessages => [...prevMessages, newSystemMessage]);
+  }
+}    
           return (
             <View style={styles.container}>
-              <View style={styles.header}>
-                <Text style={styles.headerText}>助手</Text>
-                <Text style={styles.headerText}>最近</Text>
-              </View>
               <ScrollView style={styles.chatContainer}>
-                <Text style={styles.systemMessage}>下午好！今天有什么娱乐活动安排吗？期待听到你的精彩计划！</Text>
-                <Text style={styles.timestamp}>17:04</Text>
-                <View style={styles.userMessageContainer}>
-                  <Text style={styles.userMessage}>你好</Text>
-                </View>
-                <View style={styles.aiMessageContainer}>
-                  <Text style={styles.aiMessage}>你好呀！今天感觉怎么样？有什么想和我分享的吗？</Text>
-                  <View style={styles.aiActions}>
-                    <TouchableOpacity style={styles.aiActionButton}>
-                      <Text>👍</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.aiActionButton}>
-                      <Text>👎</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.aiActionButton}>
-                      <Text>🔗</Text>
-                    </TouchableOpacity>
+                {messageList.map((message, index) => (
+                  <View key={index} style={[styles.messageContainer, message.role === "user" ? styles.userMessageContainer : styles.aiMessageContainer]}>
+                    <Text style={[styles.message, message.role === "user" ? styles.userMessage : styles.aiMessage]}>{message.content}</Text>
                   </View>
-                </View>
-                <View style={styles.suggestionsContainer}>
-                  <TouchableOpacity style={styles.suggestionButton}>
-                    <Text>你今天有什么有趣的事情发生吗</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.suggestionButton}>
-                    <Text>可以分享一下你最近的开心时刻吗</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.suggestionButton}>
-                    <Text>最近有没有遇到什么挑战怎么解决的</Text>
-                  </TouchableOpacity>
-                </View>
+                ))}
+                {/* <Text style={styles.timestamp}>17:04</Text> */}
               </ScrollView>
-              <View style={styles.footer}>
-                <TextInput style={styles.input} placeholder="有问题尽管问我~" />
-              </View>
+              <HStack style={styles.footer}>
+                <Input style={styles.input}>
+                  <InputField onChangeText={message=>{setMessage(message)}} value={message}  placeholder="有问题尽管问我~" />
+                </Input>
+                <Button onPress={()=>{SendMessage(ws,message,setMessageList)}}>
+                  <ButtonIcon as={SendIcon} size="md" color="white" />
+                </Button>
+              </HStack>
             </View>
           )
-        };
+};
+   // 连接websocket
+function connectWebSocket() {
+  ws.onopen = e => {
+    // connection opened
+    console.log("websocket连接成功")
+  };
+    ws.onmessage = e => {
+      // a message was received
+      console.log(e.data);
+    };   
+    ws.onerror = e => {
+      // an error occurred
+      console.log(e.message);
+    };
+}
+
+      
         
+
 const styles = StyleSheet.create({
           container: {
             flex: 1,
             backgroundColor: '#fff',
-          },
-          header: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            padding: 16,
-            borderBottomWidth: 1,
-            borderBottomColor: '#ddd',
-          },
-          headerText: {
-            fontSize: 18,
-            fontWeight: 'bold',
           },
           chatContainer: {
             flex: 1,
@@ -97,25 +138,7 @@ const styles = StyleSheet.create({
           aiMessage: {
             marginBottom: 10,
           },
-          aiActions: {
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-          },
-          aiActionButton: {
-            padding: 10,
-          },
-          suggestionsContainer: {
-            marginBottom: 10,
-          },
-          suggestionButton: {
-            backgroundColor: '#f0f0f0',
-            padding: 10,
-            borderRadius: 10,
-            marginBottom: 10,
-          },
           footer: {
-            flexDirection: 'row',
-            alignItems: 'center',
             padding: 16,
             borderTopWidth: 1,
             borderTopColor: '#ddd',
@@ -123,7 +146,7 @@ const styles = StyleSheet.create({
           input: {
             flex: 1,
             backgroundColor: '#f0f0f0',
-            padding: 10,
             borderRadius: 10,
+            marginRight: 10,
           },
         });

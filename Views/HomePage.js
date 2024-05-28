@@ -8,11 +8,11 @@ import { ScrollView } from "react-native";
 /**
  * 主页
  */
-const HomePage = ({ isActive }) => {
+const HomePage = ({ navigation,isActive }) => {
   return (
     <ScrollView style={{ display: isActive ? "flex" : "none" }}>
       <VStack px="$5" py="$4" space="lg" flex={1}>
-        <Header/>
+        <Header navigation={navigation}/>
         <HorizontalMenu/>
       </VStack>
     </ScrollView>

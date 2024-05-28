@@ -1,4 +1,5 @@
 import React from 'react';
+import "react-native-devsettings";
 import { StyleSheet,SafeAreaView } from 'react-native';
 import { GluestackUIProvider,View} from '@gluestack-ui/themed';
 import { config } from '@gluestack-ui/config'; // Optional if you want to use default theme
@@ -45,7 +46,7 @@ export default function App() {
     <ThemeContext.Provider value={{ colorMode, toggleColorMode }}>
     <Stack.Navigator initialRouteName='Home'>
       <Stack.Screen name='Home' component={MainPage} options={{ headerShown: false }}/>
-      <Stack.Screen name='ChatScreen' component={ChatScreen} />
+      <Stack.Screen name='ChatScreen' component={ChatScreen} options={{title:"Ai问答"}}/>
     </Stack.Navigator>
    </ThemeContext.Provider>
     </GluestackUIProvider>
