@@ -51,7 +51,6 @@ const MainPage = ({navigation}) => {
             <ProfilePage isActive={activeTab === "我的"} />
             <HomePage navigation={navigation} isActive={activeTab === "主页"}/>
             <DataAnalysisPage isActive={activeTab === "统计"}/>
-  
             <ModeChangeButton />
           </Box>
           {/* mobile bottom tabs */}

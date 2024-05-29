@@ -6,7 +6,6 @@ import { config } from '@gluestack-ui/config'; // Optional if you want to use de
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
-import Header from "./Components/Header";
 import  MainPage  from './Views/MainPage';
 import ChatScreen from './Views/ChatAi';
 
