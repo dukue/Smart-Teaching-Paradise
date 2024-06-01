@@ -59,11 +59,11 @@ export default function ChatScreen(){
             role: "ai",
             content: system
           }
+          setMsflag(false)
           setMessageList(prevMessages => [...prevMessages, newSystemMessage]);
         }
       }
       ws.onclose = e => {
-        setMsflag(false)
       }
   }    
       return (

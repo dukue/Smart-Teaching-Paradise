@@ -31,6 +31,7 @@ const HeaderLayout = ({navigation}) => {
             </View>
             <View style={styles.cardsContainer}> 
                 <View style={styles.cardsLeft}>
+                <TouchableNativeFeedback onPress={()=>{navigation.navigate('Camera')}}>
                 <Card size="lg" style={styles.card} variant="elevated"  m="$3">
                 <Heading mb="$1" size='md'>
                     拍照搜索
@@ -39,6 +40,7 @@ const HeaderLayout = ({navigation}) => {
                 <Text mb="$2" size="sm">Photo Search</Text>
                 <Text size="sm">搜题、作业批改、翻译、听力播报</Text>
                 </Card>
+                </TouchableNativeFeedback>
                 </View>         
                 <View style={styles.cardsRight}>
                 <TouchableNativeFeedback onPress={()=>{navigation.navigate('ChatScreen')}}>

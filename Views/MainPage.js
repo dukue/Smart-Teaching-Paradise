@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Box,StatusBar } from "@gluestack-ui/themed";
+import { Box} from "@gluestack-ui/themed";
 import { Home,ClipboardPlus,UserRound,BarChartBig,Radar} from 'lucide-react-native';
 
 import { MobileBottomTabs } from "../Components/MobileBottomTabs";
@@ -35,10 +35,8 @@ const bottomTabs = [
 const MainPage = ({navigation}) => {
     const [activeTab, setActiveTab] = React.useState("主页");
     const { colorMode, toggleColorMode } = useContext(ThemeContext);
-
     return (
       <>
-        <StatusBar backgroundColor={colorMode === "light" ? "white" : "#171717"} barStyle={colorMode === "dark" ? "light-content" : "dark-content"}/>
         <Box
           flex={1}
           sx={{
