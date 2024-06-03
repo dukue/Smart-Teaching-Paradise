@@ -4,6 +4,7 @@ import { View, Text, ScrollView } from '@gluestack-ui/themed'
 
 const MenuItem = ({ title, active, onPress }) => {
   const textStyle = active ? styles.activeText : styles.inactiveText;
+
   return (
     <TouchableOpacity style={styles.item} onPress={onPress}>
       <Text style={textStyle}>{title}</Text>
@@ -11,20 +12,42 @@ const MenuItem = ({ title, active, onPress }) => {
   );
 };
 
-const HorizontalMenu = () => {
-  const menuItems = ['搜题','翻译','作业批改','文档扫描','拍照转Word'];
+const HorizontalMenu = ({active}) => {
+  const menuItems = ['翻译','作业批改','搜题目','文档扫描','拍照转Word'];
+  const activeItem = active.activeItem
+  const setActiveItem = active.setActiveItem
+  const scrollViewRef = React.useRef(null);
+  const [scrollViewWidth, setScrollViewWidth] = React.useState(0);
+  const onLayoutHandler = (event) => {
+    const { width } = event.nativeEvent.layout;
+    setScrollViewWidth(width); 
+  };
+  const centerItem = () => {
+    if (scrollViewRef.current) {
+      const itemWidth = 100; 
+      const activeIndex = activeItem;
+      const offset = (activeIndex * itemWidth) - (scrollViewWidth / 2); // 计算偏移量
+      scrollViewRef.current.scrollTo({ x: offset, animated: true });
+    }
+  };
+  React.useEffect(() => {
+    console.log(active);
+    centerItem();
+  },[activeItem]);
 
   return (
     <ScrollView
+      ref={scrollViewRef}
       horizontal={true}
+      onLayout={onLayoutHandler} 
       style={styles.scrollView}
     >
       {menuItems.map((item, index) => (
         <MenuItem
           key={index}
           title={item}
-          active={index === 0} // 假设第一个菜单项是激活状态
-          onPress={() => console.log(`Selected: ${item}`)}
+          active={index === activeItem} // 假设第一个菜单项是激活状态
+          onPress={() => {setActiveItem(index);centerItem()}}
         />
       ))}
     </ScrollView>
@@ -33,11 +56,11 @@ const HorizontalMenu = () => {
 
 const styles = StyleSheet.create({
   scrollView: {
-    flex:4,
+    flex:1,
   },
-  item: {
+  item:{
+    width: 100,
     paddingVertical:2,
-    marginHorizontal:10,
     alignItems: 'center',
     justifyContent: 'center',
   },

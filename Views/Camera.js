@@ -1,16 +1,20 @@
 import React,{useEffect,useRef,useState,useCallback} from "react";
-import { StyleSheet} from "react-native";
+import { StyleSheet,TouchableOpacity} from "react-native";
 import { useIsFocused } from '@react-navigation/native';
-import { Box,Center } from '@gluestack-ui/themed';
+import { Box,Center,View,Text, HStack,Icon } from '@gluestack-ui/themed';
 import { Camera,useCameraDevice,useCameraPermission} from "react-native-vision-camera";
 import { useAppState} from "@react-native-community/hooks";
 import CameraMenu from "../Components/CameraMenu";
 import CaptureButton from "../Components/CaptureButton";
-const CameraScreen = () => {
-    const [isCameraInitialized, setIsCameraInitialized] = useState(false)
-    const { hasPermission, requestPermission } = useCameraPermission()
-    const camera = useRef(null)
+import { Image,Zap,ZapOff } from "lucide-react-native";
+import ImagePicker from 'react-native-image-crop-picker';
 
+const CameraScreen = ({navigation}) => {
+    const [isCameraInitialized, setIsCameraInitialized] = useState(false)
+    const [activeItem,setActiveItem] = useState(2) 
+    const { hasPermission, requestPermission } = useCameraPermission()
+    const [flash,setFlash] = useState('off')
+    const camera = useRef(null)
     const device = useCameraDevice('back')
     const isFocused = useIsFocused()
     const appState = useAppState()
@@ -19,13 +23,10 @@ const CameraScreen = () => {
         try {
           if (camera.current == null) throw new Error('相机未初始化')
           const photo = await camera.current.takePhoto({
-            flash: on,
+            flash: flash,
             enableShutterSound: true,
           })
-        //   const snapshot = await camera.current.takeSnapshot({
-        //     quality: 100
-        //   })
-        //   onMediaCaptured(photo, 'photo')
+          setPreView(photo)
         } catch (e) {
           console.error('拍照失败!', e)
         }
@@ -34,6 +35,48 @@ const CameraScreen = () => {
         console.log('相机初始化!')
         setIsCameraInitialized(true)
     }, [])
+
+    const toggleFlash = () => {
+      if(flash==='on'){
+        setFlash('off')
+      }else{
+        setFlash('on')
+      }
+    }
+
+    const openPicker = () => {
+      ImagePicker.openPicker({
+        width: 300,
+        height: 300,
+        freeStyleCropEnabled:true,
+        showCropGuidelines:false,
+        cropping: true,
+      }).then(image => {
+        // 处理裁剪后的图片
+        setCroppedImage(image.path);
+      })
+      .catch(err => console.error('Error:', err));
+    };
+    /**
+     * case0：翻译
+     * case1：批作业
+     * case2：搜题
+     * case3：文档识别
+     * case4：转world
+     */
+    const setPreView = useCallback((photo) => {
+      switch(activeItem){
+        case 0:
+          navigation.navigate('Translate',{photo:photo})
+          break;
+        case 1:
+          navigation.navigate('Batch',{photo:photo})
+          break;
+        case 2:
+          navigation.navigate('Preview',{photo:photo,activeItem:activeItem})
+          break;
+      }
+    })
     if(device == null) return null
     useEffect(() => {
             if (hasPermission) {
@@ -54,18 +97,28 @@ const CameraScreen = () => {
             ref={camera}
             enableZoomGesture={true}
             onInitialized={onInitialized}
+            resizeMode="cover"
             androidPreviewViewType="texture-view"
             isActive={isActive}
             preview={true}
         />
         <Box bg="black" flex={1.5}>
-        <CameraMenu/>
-        <Center>
-        <CaptureButton  enabled={isCameraInitialized} capture={takePhoto} flex={2}/>
-        </Center>
+          <CameraMenu active={{activeItem,setActiveItem}} flex={8}/>
+          <HStack style={{justifyContent: 'space-around'}} flex={2}>
+            <TouchableOpacity onPress={openPicker}>
+            <Box p="$5">
+              <Icon as={Image} size="xl" color="white"/>
+            </Box>
+            </TouchableOpacity>
+            <CaptureButton capture={takePhoto} flex={2}/>
+            <TouchableOpacity onPress={toggleFlash}>
+            <Box p="$5">
+              <Icon as={flash === 'on' ? Zap:ZapOff} size="xl" color="white"/>
+            </Box>
+            </TouchableOpacity>
+          </HStack>
         </Box>
         </>
         )
 }
-
 export default CameraScreen;

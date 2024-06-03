@@ -2,12 +2,13 @@ import React, { useCallback, useRef } from 'react'
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { Box,View, Text,  } from '@gluestack-ui/themed';
 
-const CameraButton = ({enabled,capture}) => {
+const CameraButton = ({capture}) => {
   return (
     <TouchableOpacity
-      enabled={enabled}
       style={styles.button}
-      onPress={() => capture()}
+      onPress={() => {
+        capture()
+      }}
     >
       <View bg={'$white'} style={styles.icon} />
     </TouchableOpacity>

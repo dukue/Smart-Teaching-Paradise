@@ -9,6 +9,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import  MainPage  from './Views/MainPage';
 import ChatScreen from './Views/ChatAi';
 import CameraScreen from './Views/Camera';
+import PreviewScreen from './Views/Preview';
 
 const Stack = createNativeStackNavigator()
 
@@ -51,6 +52,7 @@ export default function App() {
       <Stack.Screen name='Home' component={MainPage} options={{ headerShown: false }}/>
       <Stack.Screen name='ChatScreen' component={ChatScreen} options={{title:"Ai问答"}}/>
       <Stack.Screen name='Camera' component={CameraScreen} initialParams={{ setStatusShow }} options={{headerShown:false}}/>
+      <Stack.Screen name='Preview' component={PreviewScreen} options={{headerShown:false}}/>
     </Stack.Navigator>
    </ThemeContext.Provider>
     </GluestackUIProvider>
