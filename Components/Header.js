@@ -1,16 +1,46 @@
 import React from 'react';
-import { StyleSheet,TouchableNativeFeedback } from 'react-native';
-import { View,Divider,Text,Avatar,Icon,Input,InputSlot,InputIcon,InputField,Card,Heading,AvatarFallbackText,AvatarImage } from '@gluestack-ui/themed';
-import { Search,Camera,MessageCircleQuestion,Clock } from 'lucide-react-native';
+import { StyleSheet,TouchableNativeFeedback,TouchableHighlight } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View,Text,Avatar,Icon,Input,InputSlot,InputIcon,InputField,Card,Heading,AvatarFallbackText,AvatarImage } from '@gluestack-ui/themed';
+import { Search,Camera,MessageCircleQuestion,Clock, CodeSquare } from 'lucide-react-native';
 
 
 /**
  * 主页头部布局（header+banner）
  * */
-const HeaderLayout = ({navigation}) => {
+const HeaderLayout = ({navigation,showLogin}) => {
+        // 加载数据
+        loadData = async () => {
+            try {
+            const value = await AsyncStorage.getItem('islogin');
+            if(value == null){
+                // 显示登录界面
+                showLogin(true);
+            }else if (value !== true) {
+                // 显示登录界面
+                showLogin(true);
+            }else{
+                console.log("已登录")
+            }
+            } catch (error) {
+            // 处理错误
+            console.log('Error loading data', error);
+            }
+        };
+          // 删除数据
+        // removeData = async () => {
+        //     try {
+        //     await AsyncStorage.removeItem('isLogin');
+        //     } catch (error) {
+        //     // 处理错误
+        //     console.log('Error removing data', error);
+        //     }
+        // };
+        // removeData()
         return (
         <View p="$2">
             <View style={styles.header}>
+                <TouchableNativeFeedback onPress={()=>loadData()}>
                 <Avatar size="sm" bg="$blue600">
                 <AvatarFallbackText>Henry Stan</AvatarFallbackText>
                 <AvatarImage
@@ -19,6 +49,7 @@ const HeaderLayout = ({navigation}) => {
                     }}
                 />
                 </Avatar>
+                </TouchableNativeFeedback>
                     <Text style={styles.headerText}>设置年级</Text>
                     <View style={styles.searchContainer}>
                         <Input style={styles.searchInput}>

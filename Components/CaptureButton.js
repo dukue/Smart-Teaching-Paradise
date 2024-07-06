@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react'
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import { Box,View, Text,  } from '@gluestack-ui/themed';
+import { Box,View,Text} from '@gluestack-ui/themed';
 
 const CameraButton = ({capture}) => {
   return (

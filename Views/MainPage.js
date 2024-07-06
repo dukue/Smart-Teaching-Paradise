@@ -3,9 +3,11 @@ import { Box} from "@gluestack-ui/themed";
 import { Home,ClipboardPlus,UserRound,BarChartBig,Radar} from 'lucide-react-native';
 
 import { MobileBottomTabs } from "../Components/MobileBottomTabs";
-import ModeChangeButton from "../Components/ModeChangeButton";
 import { ThemeContext } from "../App";
+
+import LoginModal from "./loginModal";
 import HomePage from "./HomePage";
+import SocialSquarePage from "./SocialSquarePage";
 import ProfilePage from "./ProfilePage";
 import DataAnalysisPage from "./DataAnalysisPage";
 
@@ -34,7 +36,7 @@ const bottomTabs = [
   ];
 const MainPage = ({navigation}) => {
     const [activeTab, setActiveTab] = React.useState("主页");
-    const { colorMode, toggleColorMode } = useContext(ThemeContext);
+    const [loginVisible,setVisible] = React.useState(false);
     return (
       <>
         <Box
@@ -46,12 +48,13 @@ const MainPage = ({navigation}) => {
         >
   
           <Box flex={1}>
-            <ProfilePage isActive={activeTab === "我的"} />
-            <HomePage navigation={navigation} isActive={activeTab === "主页"}/>
+            <ProfilePage showLogin={setVisible} isActive={activeTab === "我的"} />
+            <HomePage navigation={navigation} showLogin={setVisible} isActive={activeTab === "主页"}/>
+            <SocialSquarePage isActive={activeTab === "广场"}/>
             <DataAnalysisPage isActive={activeTab === "统计"}/>
-            <ModeChangeButton />
+            <LoginModal visible={loginVisible} showLogin={setVisible}/>
           </Box>
-          {/* mobile bottom tabs */}
+
           <Box
             h={72}
             alignItems="center"

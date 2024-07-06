@@ -9,7 +9,6 @@ import { Center,Button,ButtonText,Modal,Input,InputField,
 import { CloseIcon,ChevronDownIcon } from "@gluestack-ui/themed";
 
 export default function PlaceModal({ modalVisible, setModalVisible }) {
-    const [showModal, setShowModal] = useState(false)
     const [timeReserve, setTimeReserve] = useState(false)
 
     const ref = React.useRef(null)
@@ -70,7 +69,7 @@ export default function PlaceModal({ modalVisible, setModalVisible }) {
                 action="secondary"
                 mr="$3"
                 onPress={() => {
-                  setShowModal(false)
+                  setModalVisible(false)
                 }}
               >
                 <ButtonText>取消</ButtonText>
@@ -80,7 +79,7 @@ export default function PlaceModal({ modalVisible, setModalVisible }) {
                 action="positive"
                 borderWidth="$0"
                 onPress={() => {
-                  setShowModal(false)
+                  setModalVisible(false)
                 }}
               >
                 <ButtonText>添加</ButtonText>

@@ -46,7 +46,7 @@ const HorizontalMenu = ({active}) => {
         <MenuItem
           key={index}
           title={item}
-          active={index === activeItem} // 假设第一个菜单项是激活状态
+          active={index === activeItem} 
           onPress={() => {setActiveItem(index);centerItem()}}
         />
       ))}

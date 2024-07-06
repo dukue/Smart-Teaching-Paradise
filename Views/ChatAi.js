@@ -1,10 +1,12 @@
 import React,{ useEffect } from 'react';
 import { TouchableOpacity,StyleSheet } from 'react-native';
-import { View,Text,Spinner,Input,InputField,ScrollView,Button,ButtonIcon,HStack  } from '@gluestack-ui/themed';
-import { SendIcon } from 'lucide-react-native';
+import { View,Text,Spinner,Input,Icon,InputField,ScrollView,Button,ButtonIcon,HStack,VStack,Pressable,useToast,Toast,ToastTitle,ToastDescription } from '@gluestack-ui/themed';
+import { SendIcon,AlertTriangleIcon} from 'lucide-react-native';
 import getWebsocketUrl,{APPID} from '../utils/aiPath';
 
 export default function ChatScreen(){
+  const toast = useToast()
+  const [id,setId] = React.useState(0)
   const [message, setMessage] = React.useState('');
   const [tempmessage, setTempMessage] = React.useState('');
   const [msflag, setMsflag] = React.useState(false);
@@ -14,57 +16,75 @@ export default function ChatScreen(){
         content:'你好，我是AI助手，有什么可以帮助你的吗？'
       }
   ])
-  useEffect(() => {
 
-  },[]);
-
+  
       // websocket发送数据
   async function SendMessage(messages,setMessageList) {
     let system = "";
-    const ws = new WebSocket(getWebsocketUrl());
-
-    var params = {
-        header: {
-            app_id: APPID, "uid": "fd3f47e3-d"
-        }, parameter: {
-            chat: {
-                "domain": "generalv3.5", "temperature": 0.5, "max_tokens": 1024
-            }
-        }, payload: {
-            message: {
-              text: [
-                  {"role": "user", "content":messages}
-              ]
-            }
-        }
-    }
-    let newUserMessage = {
-      role: "user",
-      content: messages
-    }
-    setMessageList(prevMessages => [...prevMessages, newUserMessage]);
-      ws.onopen = e => {
-        console.log("websocket连接成功?")
-        ws.send(JSON.stringify(params))
-      };
-      setMessage("")
-      ws.onmessage = e => {
-        setMsflag(true)
-        var data = JSON.parse(e.data)
-        var aiMessage = data.payload.choices.text[0].content
-        system +=aiMessage    
-        setTempMessage(system)
-        if(data.header.status === 2){
-          let newSystemMessage = {
-            role: "ai",
-            content: system
+    if(messages !== ""){
+      const ws = new WebSocket(getWebsocketUrl());
+      var params = {
+          header: {
+              app_id: APPID, "uid": "fd3f47e3-d"
+          }, parameter: {
+              chat: {
+                  "domain": "generalv3.5", "temperature": 0.5, "max_tokens": 1024
+              }
+          }, payload: {
+              message: {
+                text: [
+                    {"role": "user", "content":messages}
+                ]
+              }
           }
-          setMsflag(false)
-          setMessageList(prevMessages => [...prevMessages, newSystemMessage]);
+      }
+      let newUserMessage = {
+        role: "user",
+        content: messages
+      }
+      setMessageList(prevMessages => [...prevMessages, newUserMessage]);
+        ws.onopen = e => {
+          console.log("websocket连接成功?")
+          ws.send(JSON.stringify(params))
+        };
+        setMessage("")
+        ws.onmessage = e => {
+          setMsflag(true)
+          var data = JSON.parse(e.data)
+          var aiMessage = data.payload.choices.text[0].content
+          system +=aiMessage    
+          setTempMessage(system)
+          if(data.header.status === 2){
+            let newSystemMessage = {
+              role: "ai",
+              content: system
+            }
+            setMsflag(false)
+            setMessageList(prevMessages => [...prevMessages, newSystemMessage]);
+          }
         }
-      }
-      ws.onclose = e => {
-      }
+        ws.onclose = e => {
+        }
+    }else{
+      toast.show({
+        placement: "top right",
+        render: ({ id }) => {
+          const toastId = "toast-" + id
+          return (
+            <Toast bg="$error700" nativeID={toastId} action="warning" variant="solid">
+              <Icon as={AlertTriangleIcon} color="$white" mt="$1" mr="$3" />
+              <VStack space="xs">
+                <ToastTitle color="$textLight50">警告！</ToastTitle>
+                <ToastDescription color="$textLight50">
+                  输入内容不能为空
+                </ToastDescription>
+              </VStack>
+            </Toast>
+          )
+        },
+      })
+    }
+   
   }    
       return (
         <View style={styles.container}>

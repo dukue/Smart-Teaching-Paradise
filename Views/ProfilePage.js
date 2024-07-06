@@ -12,20 +12,17 @@ import {
   View,
   ScrollView
 } from "@gluestack-ui/themed";
-import {
-  Blinds,
-  ChevronRight,
-  Headphones,
-  HeartHandshake,
-  Settings,
-  Tablets,
-  User,
-} from "lucide-react-native";
-import { StyleSheet } from "react-native";
+import {Settings,} from "lucide-react-native";
+import { StyleSheet} from "react-native";
+import ModeChangeButton from "../Components/ModeChangeButton";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ProfilePage = ({ isActive }) => {
+
+const ProfilePage = ({ isActive,showLogin }) => {
+  const [status, setStatus] = React.useState(false);
+  const value = AsyncStorage.getItem('myData')
   return (
-    <ScrollView style={{ display: isActive ? "flex" : "none",flex:1}}>
+    <View style={{ display: isActive ? "flex" : "none",flex:1}}>
       <VStack px="$5" py="$4" space="lg">
         <HStack justifyContent="space-between">
           <Heading size="lg">个人中心</Heading>
@@ -35,12 +32,13 @@ const ProfilePage = ({ isActive }) => {
         <Avatar size="xl">
         <AvatarFallbackText>SS</AvatarFallbackText>
           <AvatarImage
+            accessibilityLabel='avatar' 
             source={{
               uri: "http://124.223.107.207/Upload/shark.png",
             }}
           />
          </Avatar>
-          <Text style={styles.name}>Cassian</Text>
+          {status && <Text style={styles.name}>Cassian</Text>}
           <Text style={styles.status}>No one</Text>
       </View>
               <View style={styles.section}>
@@ -61,7 +59,8 @@ const ProfilePage = ({ isActive }) => {
         }}>
         <Text color="$warmGray400" size="xs">Powerd by @Duke_ (2024软件杯A5作品)</Text> 
       </View>
-    </ScrollView>
+      <ModeChangeButton/>
+    </View>      
   );
 };
 

@@ -8,15 +8,6 @@ const ModeChangeButton = () => {
   return (
     <>
       <Fab
-        sx={{
-          "@md": {
-            display: "none",
-          },
-          "@base": {
-            bottom: "$4",
-            right: "$4",
-          },
-        }}
         onPress={toggleColorMode}
       >
         <FabIcon as={colorMode === "light" ? Moon : Sun} fill="currentColor" />

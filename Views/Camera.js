@@ -46,14 +46,14 @@ const CameraScreen = ({navigation}) => {
 
     const openPicker = () => {
       ImagePicker.openPicker({
-        width: 300,
-        height: 300,
+        width: 1080,
+        height: 960,
         freeStyleCropEnabled:true,
         showCropGuidelines:false,
         cropping: true,
       }).then(image => {
         // 处理裁剪后的图片
-        setCroppedImage(image.path);
+        setPreView(image)
       })
       .catch(err => console.error('Error:', err));
     };
@@ -73,7 +73,7 @@ const CameraScreen = ({navigation}) => {
           navigation.navigate('Batch',{photo:photo})
           break;
         case 2:
-          navigation.navigate('Preview',{photo:photo,activeItem:activeItem})
+          navigation.navigate('Preview',{photo:photo,activeItem:"2"})
           break;
       }
     })
