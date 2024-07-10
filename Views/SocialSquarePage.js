@@ -91,7 +91,8 @@ const renderItem = ({ item }) => (
       <Fab
         size="sm"
         placement="bottom right"
-        bg="$emerald600">
+        bg="$emerald600"
+        onPress={() =>console.log('发帖')}>
         <FabIcon as={Plus} mr="$1" fill="currentColor"/>
         <FabLabel>发帖</FabLabel>
       </Fab>
