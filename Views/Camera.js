@@ -6,7 +6,7 @@ import { Camera,useCameraDevice,useCameraPermission} from "react-native-vision-c
 import { useAppState} from "@react-native-community/hooks";
 import CameraMenu from "../Components/CameraMenu";
 import CaptureButton from "../Components/CaptureButton";
-import { Image,Zap,ZapOff } from "lucide-react-native";
+import { ImageIcon,Zap,ZapOff } from "lucide-react-native";
 import ImagePicker from 'react-native-image-crop-picker';
 
 const CameraScreen = ({navigation}) => {
@@ -50,30 +50,46 @@ const CameraScreen = ({navigation}) => {
         height: 960,
         freeStyleCropEnabled:true,
         showCropGuidelines:false,
-        cropping: true,
       }).then(image => {
         // 处理裁剪后的图片
         setPreView(image)
       })
       .catch(err => console.error('Error:', err));
     };
+
+    const Cropping = (photo) => {
+      ImagePicker.openCropper({
+        path: `file://${photo}`,
+        width: 1280,
+        height: 960,
+        freeStyleCropEnabled:true,
+        showCropGuidelines:false,
+        hideBottomControls:true,
+      }).then(image => {
+        // 处理裁剪后的图片
+        navigation.navigate('PreviewScreen',{photo:image,activeItem:activeItem})
+      })
+    }
     /**
      * case0：翻译
      * case1：批作业
      * case2：搜题
-     * case3：文档识别
-     * case4：转world
+     * case3：听写
+     * case4：world(开发中)
      */
     const setPreView = useCallback((photo) => {
       switch(activeItem){
         case 0:
-          navigation.navigate('Translate',{photo:photo})
+          Cropping(photo.path)
           break;
         case 1:
-          navigation.navigate('Batch',{photo:photo})
+          Cropping(photo.path)
           break;
         case 2:
-          navigation.navigate('Preview',{photo:photo,activeItem:"2"})
+          Cropping(photo.path)
+          break;
+        case 3:
+          Cropping(photo.path)
           break;
       }
     })
@@ -107,7 +123,7 @@ const CameraScreen = ({navigation}) => {
           <HStack style={{justifyContent: 'space-around'}} flex={2}>
             <TouchableOpacity onPress={openPicker}>
             <Box p="$5">
-              <Icon as={Image} size="xl" color="white"/>
+              <Icon as={ImageIcon} size="xl" color="white"/>
             </Box>
             </TouchableOpacity>
             <CaptureButton capture={takePhoto} flex={2}/>

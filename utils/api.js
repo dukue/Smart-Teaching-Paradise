@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 创建axios实例
 const instance = axios.create({
-  baseURL: 'http://192.168.1.8:3002', // 你的API域名
+  baseURL: 'http://124.223.107.207:3333', // 你的API域名
   timeout: 1000, // 请求超时时间
 });
 

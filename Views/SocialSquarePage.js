@@ -1,25 +1,26 @@
 import React,{useEffect,useState} from 'react';
 import { StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-import { View,Text, Image, ScrollView, Fab, FabIcon, FabLabel,Icon, HStack, Button,ButtonText,ButtonIcon,Spinner,Center} from '@gluestack-ui/themed';
+import { View,Text, Image, ScrollView,Icon, HStack, Button,ButtonText,ButtonIcon,Spinner,Center} from '@gluestack-ui/themed';
 import { ThumbsUp,MessageSquareText,Share2,Heart,Plus } from 'lucide-react-native';
 import api from '../utils/api';
+import PostModal from './PostModal';
 
-const SocialAppPage = ({isActive}) => {
+const SocialAppPage = ({navigation,isActive,showLogin}) => {
   const [data, setData] = useState([]); // 初始为空列表
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [flag, setFlag] = useState(false);
   const [endTip, setEndTip] = useState(false);
-  const [pageSize, setPageSize] = useState(6);
   const [pageNum, setPageNum] = useState(0);
   useEffect(() => {
-    getData();
-  }, []); 
-  const getData = async() => {
+    getData(0);
+  }, [flag]); 
+  const getData = async(num) => {
     try {
       setIsLoading(true);
       await api.get('/post/getPostList',{params:{
-        pageSize:pageSize,
-        pageNum:pageNum * pageSize
+        pageSize:6,
+        pageNum:num * 6
       }}).then(res => {
         if(res.data.length > 0){
           setData([...data, ...res.data]); // 将新数据添加到现有数据中
@@ -33,28 +34,31 @@ const SocialAppPage = ({isActive}) => {
       console.log(err)
     }
   }
-  const handleEndReached = () => {
-      setPageNum(pageNum + 1);
-      getData();
+  const handleEndReached = async(num) => {
+      setPageNum(num);
+      await getData(num);
   }
-  const refreshData = () => {
-    setPageNum(0);
+  const refreshData = async() => {
     setData([]);
     setEndTip(false);
-    getData();
+    setPageNum(0);
+    setFlag(!flag);
   }
 const renderItem = ({ item }) => (
     <View style={styles.post}>
-    <View style={styles.userInfo}>
-      <Image accessibilityLabel='avatar' source={{ uri: item.avatar }} style={styles.avatar} />
-      <HStack  space="md" style={styles.userNameContainer}>
-        <Text style={styles.userName}>{item.nickname}</Text>
-        <Button size="sm" variant="solid" action="primary"><ButtonIcon as={Heart} size='sm' mr='$1'/><ButtonText>关注</ButtonText></Button>
-      </HStack>
-    </View>
+      <TouchableOpacity onPress={() => navigation.navigate('PostDetail',{postItem:item})}>
+      <View style={styles.userInfo}>
+        <Image accessibilityLabel='avatar' source={{ uri: item.avatar }} style={styles.avatar} />
+        <HStack  space="md" style={styles.userNameContainer}>
+          <Text style={styles.userName}>{item.nickname}</Text>
+          <Button size="sm" variant="solid" action="primary"><ButtonIcon as={Heart} size='sm' mr='$1'/><ButtonText>关注</ButtonText></Button>
+        </HStack>
+      </View>
+    <Text style={styles.postTitle}>{item.title}</Text>
     <Text style={styles.postText}>
       {item.content}
     </Text>
+    </TouchableOpacity>
     {item.images!='' && <View style={styles.imageGrid}>
       {item.images.split(',').map((image,index) => (
         <Image accessibilityLabel='avatar' key={index} source={{ uri: image }} style={styles.image}/>
@@ -79,7 +83,7 @@ const renderItem = ({ item }) => (
       keyExtractor={item => item.post_id}
       refreshing={refreshing}
       onRefresh={refreshData}  
-      onEndReached={handleEndReached}
+      onEndReached={()=>handleEndReached(pageNum + 1)}
       />
       {isLoading && <Center>
         <HStack space="sm">
@@ -88,14 +92,7 @@ const renderItem = ({ item }) => (
         </HStack>
       </Center>}
       {endTip && <Center><Text size="md">没有更多数据了</Text></Center>}
-      <Fab
-        size="sm"
-        placement="bottom right"
-        bg="$emerald600"
-        onPress={() =>console.log('发帖')}>
-        <FabIcon as={Plus} mr="$1" fill="currentColor"/>
-        <FabLabel>发帖</FabLabel>
-      </Fab>
+      <PostModal showLogin={showLogin} renderDate={refreshData}/>
     </View>
   );
 };
@@ -164,6 +161,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginTop: 10,
   },
+  postTitle:{
+    fontSize: 20,
+    fontWeight: 'bold',
+  }
 });
 
 export default SocialAppPage;

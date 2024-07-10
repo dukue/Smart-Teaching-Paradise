@@ -1,18 +1,21 @@
-import React from 'react';
+import React,{useEffect,useState,useContext} from 'react';
 import { StyleSheet,TouchableNativeFeedback,TouchableHighlight } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View,Text,Avatar,Icon,Input,InputSlot,InputIcon,InputField,Card,Heading,AvatarFallbackText,AvatarImage } from '@gluestack-ui/themed';
+import { View,Text,Avatar,Spinner,Icon,Input,InputSlot,InputIcon,InputField,Card,Heading,AvatarFallbackText,AvatarImage, Button } from '@gluestack-ui/themed';
 import { Search,Camera,MessageCircleQuestion,Clock, CodeSquare } from 'lucide-react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserDataContext} from '../Views/MainPage';
 
 /**
  * 主页头部布局（header+banner）
  * */
 const HeaderLayout = ({navigation,showLogin}) => {
-        // 加载数据
+    const userDate = useContext(UserDataContext);
+    if (!userDate || !userDate.userDate.avatar || !userDate.userDate.nickname) {
+        return <Spinner/>
+      }
         loadData = async () => {
             try {
-            const value = await AsyncStorage.getItem('islogin');
+                const value = userDate.userDate.islogin
             if(value == null){
                 // 显示登录界面
                 showLogin(true);
@@ -27,30 +30,19 @@ const HeaderLayout = ({navigation,showLogin}) => {
             console.log('Error loading data', error);
             }
         };
-          // 删除数据
-        // removeData = async () => {
-        //     try {
-        //     await AsyncStorage.removeItem('isLogin');
-        //     } catch (error) {
-        //     // 处理错误
-        //     console.log('Error removing data', error);
-        //     }
-        // };
-        // removeData()
         return (
         <View p="$2">
             <View style={styles.header}>
                 <TouchableNativeFeedback onPress={()=>loadData()}>
-                <Avatar size="sm" bg="$blue600">
-                <AvatarFallbackText>Henry Stan</AvatarFallbackText>
-                <AvatarImage
-                    source={{
-                    uri: "http://124.223.107.207/Upload/shark.png",
+                    <Avatar backgroundColor={'rgba(0, 0, 0, 0)'} size="sm">
+                    <AvatarFallbackText>{userDate.userDate.nickname.slice(0,1)}</AvatarFallbackText>
+                    <AvatarImage
+                        source={{uri:userDate.userDate.avatar,
                     }}
-                />
-                </Avatar>
+                    />
+                    </Avatar>
                 </TouchableNativeFeedback>
-                    <Text style={styles.headerText}>设置年级</Text>
+                    <Text style={styles.headerText}>{userDate.userDate.nickname}</Text>
                     <View style={styles.searchContainer}>
                         <Input style={styles.searchInput}>
                         <InputSlot pl="$1">
@@ -58,7 +50,7 @@ const HeaderLayout = ({navigation,showLogin}) => {
                         </InputSlot>
                         <InputField placeholder="搜索..." />
                     </Input>
-                    </View>                
+                    </View>         
             </View>
             <View style={styles.cardsContainer}> 
                 <View style={styles.cardsLeft}>
@@ -83,6 +75,7 @@ const HeaderLayout = ({navigation,showLogin}) => {
                 <Text size="sm">AI Q&A</Text>
                 </Card>
                 </TouchableNativeFeedback>
+                <TouchableNativeFeedback onPress={()=>{navigation.navigate('Tomato')}}>
                 <Card size="md" style={styles.card} variant="elevated"  m="$2">
                 <Heading size="sm">
                     番茄时钟
@@ -90,6 +83,7 @@ const HeaderLayout = ({navigation,showLogin}) => {
                 </Heading>
                 <Text size="sm">ketchup clock</Text>
                 </Card>
+                </TouchableNativeFeedback>
                 </View>
             </View>
         </View>

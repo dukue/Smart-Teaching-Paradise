@@ -1,16 +1,17 @@
-import React,{useState} from 'react';
+import React,{useState,useContext} from 'react';
 import { StyleSheet,TouchableHighlight,Dimensions } from 'react-native';
 import { Actionsheet,Center,ActionsheetContent,ActionsheetBackdrop,
         ActionsheetDragIndicatorWrapper,ActionsheetDragIndicator,
         Button,ButtonText,ButtonIcon,Box,FormControl,Heading,Input,
         InputField,Text,VStack,InputSlot,InputIcon,Icon,HStack,useToast,
         Toast,ToastTitle,ToastDescription} from '@gluestack-ui/themed';
-import {AlertTriangleIcon,Check} from 'lucide-react-native';
-import { EyeIcon,EyeOffIcon,ArrowLeftIcon } from 'lucide-react-native';
+import {AlertTriangleIcon,Check,EyeIcon,EyeOffIcon,ArrowLeftIcon} from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../utils/api';
+import {UserDataContext} from '../Views/MainPage';
 
 export default function LoginModal({visible,showLogin}) {
+    const user = useContext(UserDataContext);
     const [username, setUsername] = useState(''); 
     const handleUserChange = (text) => {
         setUsername(text);
@@ -75,17 +76,25 @@ export default function LoginModal({visible,showLogin}) {
                     password: password
                 }}).then(response => {
                      // 存储数据
-                    AsyncStorage.setItem('token', response.data.token);
-                    AsyncStorage.setItem('id', response.data.id);
+                    AsyncStorage.setItem('token', response.data.accessToken);
+                    AsyncStorage.setItem('Id',response.data.userId.toString());
                     AsyncStorage.setItem('username', response.data.username);
-                    AsyncStorage.setItem('role', response.data.role);
-                    AsyncStorage.setItem('avatar', response.data.avatar);
-                    AsyncStorage.setItem('email', response.data.email);
-                    AsyncStorage.setItem('phone', response.data.phone);
+                    if(response.data.avatar == '' || response.data.avatar == null){
+                      AsyncStorage.setItem('avatar', 'http://124.223.107.207/Upload/default.jpg');
+                      AsyncStorage.setItem('nickname', response.data.username);
+                      user.setUserDate({nickname:response.data.username,avatar:'http://124.223.107.207/Upload/default.jpg',Id:response.data.userId,islogin:true})
+                    }else{
+                      AsyncStorage.setItem('avatar', response.data.avatar);
+                      AsyncStorage.setItem('nickname', response.data.nickname);
+                      user.setUserDate({nickname:response.data.nickname,avatar:response.data.avatar,Id:response.data.userId,islogin:true})
+                    }
+                    // AsyncStorage.setItem('email', response.data.email);
+                    // AsyncStorage.setItem('phone', response.data.phone);
                     AsyncStorage.setItem('islogin', 'true');
                     handleClose();
                     setUsername('');
                     setPassword('');
+                    
                     toast.show({
                         placement: "top",
                         render: ({ id }) => {
@@ -152,7 +161,10 @@ export default function LoginModal({visible,showLogin}) {
                 await api.get('/user/addUser', {
                     params:{
                     username: username,
-                    password: password,}}).
+                    password: password,
+                    avatar:"http://124.223.107.207/Upload/default.jpg",
+                    nickname:username
+                  }}).
                     then(response => {
                         if(response.data==1){
                             toast.show({

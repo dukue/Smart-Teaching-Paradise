@@ -13,7 +13,7 @@ const MenuItem = ({ title, active, onPress }) => {
 };
 
 const HorizontalMenu = ({active}) => {
-  const menuItems = ['翻译','作业批改','搜题目','文档扫描','拍照转Word'];
+  const menuItems = ['翻译','作业批改','搜题目','听写助手','文档扫描'];
   const activeItem = active.activeItem
   const setActiveItem = active.setActiveItem
   const scrollViewRef = React.useRef(null);

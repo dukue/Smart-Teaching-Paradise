@@ -1,15 +1,18 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import "react-native-devsettings";
 import { StyleSheet,SafeAreaView } from 'react-native';
 import { GluestackUIProvider,View,StatusBar} from '@gluestack-ui/themed';
 import { config } from '@gluestack-ui/config'; // Optional if you want to use default theme
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import  MainPage  from './Views/MainPage';
 import ChatScreen from './Views/ChatAi';
 import CameraScreen from './Views/Camera';
 import PreviewScreen from './Views/Preview';
+import TomatoClock from './Views/TomatoClock';
+import PostDetail from './Views/PostDetail';
 
 const Stack = createNativeStackNavigator()
 
@@ -26,7 +29,6 @@ export const ThemeContext = React.createContext<ThemeContextType>({
 export default function App() {
   const [colorMode, setColorMode] = React.useState<"dark" | "light">("light");
   const [statusShow, setStatusShow] =React.useState(false);
-
   const toggleColorMode = async () => {
     setColorMode((prev) => (prev === "light" ? "dark" : "light"));
   };
@@ -52,7 +54,9 @@ export default function App() {
       <Stack.Screen name='Home' component={MainPage} options={{ headerShown: false }}/>
       <Stack.Screen name='ChatScreen' component={ChatScreen} options={{title:"Ai问答"}}/>
       <Stack.Screen name='Camera' component={CameraScreen} initialParams={{ setStatusShow }} options={{headerShown:false}}/>
-      <Stack.Screen name='Preview' component={PreviewScreen} options={{headerShown:false}}/>
+      <Stack.Screen name='PreviewScreen' component={PreviewScreen} options={{headerShown:false}}/>
+      <Stack.Screen name='Tomato' component={TomatoClock} options={{headerShown:false}}/>
+      <Stack.Screen name='PostDetail' component={PostDetail} options={{headerShown:false}}/>
     </Stack.Navigator>
    </ThemeContext.Provider>
     </GluestackUIProvider>

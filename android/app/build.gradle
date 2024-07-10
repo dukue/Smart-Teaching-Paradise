@@ -90,6 +90,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('education.keystore')
+            storePassword '123456'
+            keyAlias 'edu'
+            keyPassword '123456'
+        }
     }
     buildTypes {
         debug {

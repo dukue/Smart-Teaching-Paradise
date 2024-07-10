@@ -1,16 +1,15 @@
-import React, { useContext } from "react";
+import React, { useContext,createContext,useEffect } from "react";
 import { Box} from "@gluestack-ui/themed";
 import { Home,ClipboardPlus,UserRound,BarChartBig,Radar} from 'lucide-react-native';
 
 import { MobileBottomTabs } from "../Components/MobileBottomTabs";
 import { ThemeContext } from "../App";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginModal from "./loginModal";
 import HomePage from "./HomePage";
 import SocialSquarePage from "./SocialSquarePage";
 import ProfilePage from "./ProfilePage";
 import DataAnalysisPage from "./DataAnalysisPage";
-
 
 const bottomTabs = [
     {
@@ -34,9 +33,27 @@ const bottomTabs = [
       label: "我的",
     },
   ];
+export const UserDataContext = React.createContext();
 const MainPage = ({navigation}) => {
     const [activeTab, setActiveTab] = React.useState("主页");
     const [loginVisible,setVisible] = React.useState(false);
+    const [userDate,setUserDate] = React.useState({ nickname: '未登录', avatar: 'http://124.223.107.207/Upload/default.jpg' });
+    useEffect(() => {
+      getUserDate()  
+    },[])
+    const getUserDate = async () => {
+        // 加载昵称
+        const nickname = await AsyncStorage.getItem('nickname');
+        const nicknameValue = nickname || '未登录';
+
+        // 加载头像
+        const avatar = await AsyncStorage.getItem('avatar');
+        const avatarValue = avatar || 'http://124.223.107.207/Upload/shark.png';
+        // 加载登录状态
+        const islogin =  Boolean(await AsyncStorage.getItem('islogin'))
+        const isloginValue = islogin || false
+        setUserDate({ nickname: nicknameValue, avatar: avatarValue ,islogin:isloginValue}); 
+    }
     return (
       <>
         <Box
@@ -48,11 +65,13 @@ const MainPage = ({navigation}) => {
         >
   
           <Box flex={1}>
-            <ProfilePage showLogin={setVisible} isActive={activeTab === "我的"} />
-            <HomePage navigation={navigation} showLogin={setVisible} isActive={activeTab === "主页"}/>
-            <SocialSquarePage isActive={activeTab === "广场"}/>
-            <DataAnalysisPage isActive={activeTab === "统计"}/>
-            <LoginModal visible={loginVisible} showLogin={setVisible}/>
+            <UserDataContext.Provider value={{ userDate, setUserDate }}>
+              <ProfilePage showLogin={setVisible} isActive={activeTab === "我的"} />
+              <HomePage  navigation={navigation} showLogin={setVisible} isActive={activeTab === "主页"}/>
+              <SocialSquarePage navigation={navigation}  showLogin={setVisible} isActive={activeTab === "广场"}/>
+              <DataAnalysisPage isActive={activeTab === "统计"}/>
+              <LoginModal visible={loginVisible} showLogin={setVisible}/>
+            </UserDataContext.Provider>
           </Box>
 
           <Box

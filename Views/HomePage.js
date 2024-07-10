@@ -8,7 +8,7 @@ import { ScrollView } from "react-native";
 /**
  * 主页
  */
-const HomePage = ({ navigation,isActive,showLogin }) => {
+const HomePage = ({ navigation,isActive,showLogin}) => {
   return (
     <ScrollView style={{ display: isActive ? "flex" : "none" }}>
       <VStack px="$5" py="$4" space="lg" flex={1}>
